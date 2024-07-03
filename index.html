@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random User Profiles</title>
+  <style>
+    *{
+        background-color: black;
+    }
+
+    .profile-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 8px;
+      width: 300px;
+      display: inline-block;
+      vertical-align: top;
+      color: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      color: white;
+
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+      
+    }
+    th {
+      background-color:#f2f2f2;
+      color: black;
+    }
+    #moreUsersBtn{
+        color: white;
+        border-color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="profilesContainer"></div>
+  <table id="profilesTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+  </table>
+  <button id="moreUsersBtn">More Users</button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const profilesContainer = document.getElementById('profilesContainer');
+  const profilesTable = document.getElementById('profilesTable');
+  const moreUsersBtn = document.getElementById('moreUsersBtn');
+  
+  moreUsersBtn.addEventListener('click', fetchUsers);
+
+  async function fetchUsers() {
+    try {
+      const response = await fetch('https://randomuser.me/api/?results=5');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      const users = data.results;
+
+      // Clear previous profiles
+      profilesContainer.innerHTML = '';
+      profilesTable.querySelector('tbody').innerHTML = '';
+
+      // Update profilesContainer and profilesTable
+      users.forEach(user => {
+        const profileCard = createProfileCard(user);
+        profilesContainer.appendChild(profileCard);
+        const tableRow = createUserTableRow(user);
+        profilesTable.querySelector('tbody').appendChild(tableRow);
+      });
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      alert('Failed to fetch user profiles. Please try again.');
+    }
+  }
+
+  function createProfileCard(user) {
+    const card = document.createElement('div');
+    card.classList.add('profile-card');
+    card.innerHTML = `
+      <img src="${user.picture.medium}" alt="Profile Picture">
+      <h3>${user.name.first} ${user.name.last}</h3>
+      <p>Email: ${user.email}</p>
+    `;
+    return card;
+  }
+
+  function createUserTableRow(user) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${user.name.first} ${user.name.last}</td>
+      <td>${user.email}</td>
+    `;
+    return row;
+  }
+});
+
+  </script>
+</body>
+</html>
